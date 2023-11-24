@@ -1,0 +1,25 @@
+@startuml
+class Publisher {
+}
+class parser {
+~ String key
+}
+interface Secciones {
+~ void actualizar()
+}
+class Apple {
++ void actualizar()
+}
+abstract class Observer {
+}
+class Main {
+}
+class ConcreteSub {
+}
+class NewsApiClient {
+}
+
+
+Secciones <|.. Apple
+Observer <|-- ConcreteSub
+@enduml
