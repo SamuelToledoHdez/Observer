@@ -12,72 +12,89 @@ import java.util.regex.Pattern;
 
 public class NewsGUI extends JFrame {
     public NewsGUI(ArrayList<String> noticias, String tituloPagina) {
-        try {
-            UIManager.setLookAndFeel(new NimbusLookAndFeel());
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
-
+        //configurarLookAndFeel();
+        // Configurar la ventana
         setTitle("Noticias - " + tituloPagina);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 450);
         setResizable(false);
 
-        // Crear un panel principal con BorderLayout
+        JPanel panelPrincipal = crearPanelPrincipal(tituloPagina);
+        JPanel panelNoticias = crearPanelNoticias(noticias);
+
+        panelPrincipal.add(new JScrollPane(panelNoticias), BorderLayout.CENTER);
+
+        add(panelPrincipal);
+        setVisible(true);
+    }
+
+    /**
+     * Configura el Look and Feel de la aplicación para Nimbus: Opcional
+     */
+    private void configurarLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(new NimbusLookAndFeel());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JPanel crearPanelPrincipal(String tituloPagina) {
+        JPanel panelCabecera = crearPanelCabecera(tituloPagina);
+
         JPanel panelPrincipal = new JPanel(new BorderLayout());
+        panelPrincipal.add(panelCabecera, BorderLayout.NORTH);
 
-        // Agregar el panel de título con logo en la parte superior
-        JPanel panelTitulo = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel labelTitulo = new JLabel(tituloPagina);
-        labelTitulo.setFont(new Font("Roboto", Font.BOLD, 18));
-        panelTitulo.add(labelTitulo);
+        return panelPrincipal;
+    }
 
-        // Agregar el logo al panel de título
+    private JPanel crearPanelCabecera(String tituloPagina) {
+        JPanel panelCabecera = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel labelCabecera = new JLabel(tituloPagina);
+        labelCabecera.setFont(new Font("Roboto", Font.BOLD, 18));
+
         ImageIcon iconoLogo = getLogo(50, 150);
         if (iconoLogo != null) {
             JLabel labelLogo = new JLabel(iconoLogo);
-            panelTitulo.add(labelLogo);
+            panelCabecera.add(labelLogo);
         }
 
-        panelPrincipal.add(panelTitulo, BorderLayout.NORTH);
+        panelCabecera.add(labelCabecera);
+        return panelCabecera;
+    }
 
-        // Crear un panel para las noticias con JScrollPane
+    private JPanel crearPanelNoticias(ArrayList<String> noticias) {
         JPanel panelNoticias = new JPanel();
         panelNoticias.setLayout(new BoxLayout(panelNoticias, BoxLayout.Y_AXIS));
 
-        // Agregar solo los títulos al panel
         for (String noticia : noticias) {
-            String titulo = extraerTituloNoticia(noticia);
-
-            // Crear un panel personalizado para el título
-            JPanel panelTituloNoticia = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            panelTituloNoticia.setBackground(new Color(240, 240, 240)); // Color de fondo
-            panelTituloNoticia.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // Borde
-
-            // Configurar el estilo de la etiqueta JLabel dentro del panel personalizado
-            JLabel labelTituloNoticia = new JLabel(titulo);
-            labelTituloNoticia.setForeground(Color.BLACK); // Cambiar el color del texto
-            labelTituloNoticia.setFont(new Font("Roboto", Font.BOLD, 14)); // Cambiar la fuente y el tamaño
-
-            // Agregar el MouseListener para abrir la ventana de la noticia completa
-            labelTituloNoticia.addMouseListener(new NoticiaMouseListener(noticia));
-
-            // Agregar la etiqueta al panel personalizado
-            panelTituloNoticia.add(labelTituloNoticia);
-
-            // Agregar el panel personalizado al panel de noticias
+            JPanel panelTituloNoticia = crearPanelTituloNoticia(noticia);
             panelNoticias.add(panelTituloNoticia);
-            panelNoticias.add(Box.createRigidArea(new Dimension(5, 15))); // Espaciado entre títulos
+            panelNoticias.add(Box.createRigidArea(new Dimension(5, 15)));
         }
 
-        // Agregar el panel de noticias al panel principal en el centro
-        panelPrincipal.add(new JScrollPane(panelNoticias), BorderLayout.CENTER);
+        return panelNoticias;
+    }
 
-        // Agregar el panel principal a la ventana
-        add(panelPrincipal);
+    private JPanel crearPanelTituloNoticia(String noticia) {
+        String titulo = extraerTituloNoticia(noticia);
 
-        // Hacer visible la ventana
-        setVisible(true);
+        JPanel panelTituloNoticia = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelTituloNoticia.setBackground(new Color(222, 222, 216));
+        panelTituloNoticia.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+
+        JLabel labelTituloNoticia = new JLabel(titulo);
+        configurarEstiloLabelTitulo(labelTituloNoticia, noticia);
+
+        panelTituloNoticia.add(labelTituloNoticia);
+        return panelTituloNoticia;
+    }
+
+    private void configurarEstiloLabelTitulo(JLabel labelTituloNoticia, String noticia) {
+        labelTituloNoticia.setForeground(Color.BLACK);
+        labelTituloNoticia.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        labelTituloNoticia.setFont(new Font("Roboto", Font.BOLD, 14));
+        labelTituloNoticia.addMouseListener(new NoticiaMouseListener(noticia));
     }
 
     ImageIcon getLogo(int h, int w) {
@@ -93,7 +110,7 @@ public class NewsGUI extends JFrame {
     }
 
     private String extraerTituloNoticia(String noticia) {
-        // Usar una expresión regular para encontrar el texto antes del primer punto en la primera línea
+        // Se considera título todo lo que está antes del primer punto de la noticia
         String regex = "^(.*?\\.)";
         Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
         Matcher matcher = pattern.matcher(noticia);
