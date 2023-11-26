@@ -17,6 +17,7 @@ public class NewsGUI extends JFrame {
         setTitle("Noticias - " + tituloPagina);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 450);
+        setIconImage(new ImageIcon("nalogo.png").getImage());
         setResizable(false);
 
         JPanel panelPrincipal = crearPanelPrincipal(tituloPagina);
@@ -98,10 +99,8 @@ public class NewsGUI extends JFrame {
     }
 
     ImageIcon getLogo() {
-        URL urlLogo = getClass().getResource("/logo.png");
         try {
-            assert urlLogo != null;
-            ImageIcon originalIcon = new ImageIcon(urlLogo);
+            ImageIcon originalIcon = new ImageIcon("logo.png");
             Image resizedImage = originalIcon.getImage().getScaledInstance(130, 35, Image.SCALE_SMOOTH);
             return new ImageIcon(resizedImage);
         } catch (Exception e) {
@@ -139,6 +138,7 @@ public class NewsGUI extends JFrame {
         public void mouseClicked(MouseEvent e) {
             // Crear una nueva ventana para mostrar la noticia completa
             JFrame ventanaNoticia = new JFrame(tituloNoticia);
+            ventanaNoticia.setIconImage(new ImageIcon("nalogo.png").getImage());
             ventanaNoticia.setSize(600, 400);
             ventanaNoticia.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar solo la ventana actual al cerrar
 
