@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class NewsGUI extends JFrame {
     public NewsGUI(ArrayList<String> noticias, String tituloPagina) {
-        configurarLookAndFeel();
+        //configurarLookAndFeel();
         // Configurar la ventana
         setTitle("Noticias - " + tituloPagina);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -22,8 +22,10 @@ public class NewsGUI extends JFrame {
 
         JPanel panelPrincipal = crearPanelPrincipal(tituloPagina);
         JPanel panelNoticias = crearPanelNoticias(noticias);
-
         panelPrincipal.add(new JScrollPane(panelNoticias), BorderLayout.CENTER);
+        panelNoticias.setBackground(new Color(222, 222, 216));
+        panelNoticias.setOpaque(true);
+
 
         add(panelPrincipal);
         setVisible(true);
@@ -44,6 +46,9 @@ public class NewsGUI extends JFrame {
         JPanel panelCabecera = crearPanelCabecera(tituloPagina);
 
         JPanel panelPrincipal = new JPanel(new BorderLayout());
+        panelCabecera.setBackground(new Color(222, 222, 216));
+        panelCabecera.setOpaque(true);
+
         panelPrincipal.add(panelCabecera, BorderLayout.NORTH);
 
         return panelPrincipal;
@@ -70,19 +75,47 @@ public class NewsGUI extends JFrame {
 
         for (String noticia : noticias) {
             JPanel panelTituloNoticia = crearPanelTituloNoticia(noticia);
+
+            // Agregar MouseListener para resaltar al pasar el ratón
+            panelTituloNoticia.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    panelTituloNoticia.setBackground(new Color(160, 158, 149)); // Cambiar color al pasar el ratón
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    panelTituloNoticia.setBackground(new Color(222, 222, 216)); // Restaurar color al salir del ratón
+                }
+            });
+
             panelNoticias.add(panelTituloNoticia);
-            panelNoticias.add(Box.createRigidArea(new Dimension(5, 15)));
+            panelNoticias.add(Box.createRigidArea(new Dimension(5, 10)));
         }
 
         return panelNoticias;
     }
 
+    // En el método crearPanelTituloNoticia, para establecer el color inicial
     private JPanel crearPanelTituloNoticia(String noticia) {
         String titulo = extraerTituloNoticia(noticia);
 
         JPanel panelTituloNoticia = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelTituloNoticia.setBackground(new Color(222, 222, 216));
-        panelTituloNoticia.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        panelTituloNoticia.setBorder(BorderFactory.createLineBorder(new Color(200, 195, 179), 1));
+
+        // Agregar MouseListener para resaltar al pasar el ratón
+        panelTituloNoticia.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                panelTituloNoticia.setBackground(new Color(200, 200, 196)); // Cambiar color al pasar el ratón
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                panelTituloNoticia.setBackground(new Color(222, 222, 216)); // Restaurar color al salir del ratón
+            }
+        });
 
         JLabel labelTituloNoticia = new JLabel(titulo);
         configurarEstiloLabelTitulo(labelTituloNoticia, noticia);
